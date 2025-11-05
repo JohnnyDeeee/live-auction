@@ -1,249 +1,162 @@
-# Laravel Docker Examples Project
+# Live auction
 
-## Table of Contents
+This platform will provide functionality for a live auction platform. On this platform users can bid in real-time on items while the auction timer is running.  
+Item listings are created by an admin as is the scheduling of auction timers.  
+The platform provides browser and email notifications on status updates.  
+The platform functionality is exposed by a REST API to allow flexibility in client solutions.  
+A fully functional web client will be provided for this platform.
 
-- [Overview](#overview)
-- [Project Structure](#project-structure)
-  - [Directory Structure](#directory-structure)
-  - [Development Environment](#development-environment)
-  - [Production Environment](#production-environment)
-- [Getting Started](#getting-started)
-  - [Clone the Repository](#clone-the-repository)
-  - [Setting Up the Development Environment](#setting-up-the-development-environment)
-- [Usage](#usage)
-- [Production Environment](#production-environment-1)
-  - [Building and Running the Production Environment](#building-and-running-the-production-environment)
-- [Technical Details](#technical-details)
-- [Contributing](#contributing)
-  - [How to Contribute](#how-to-contribute)
-- [License](#license)
+## Features
 
+| Implemented (🟥/🟩) | Feature                              | Tools                                                                     |
+| ------------------- | ------------------------------------ | ------------------------------------------------------------------------- |
+| 🟥                  | User Registration and Authentication | Laravel Breeze/Jetstream or Sanctum for API token auth                    |
+| 🟥                  | Item Listings with Categories        | Eloquent ORM relationships, database migrations                           |
+| 🟥                  | Real-Time Bidding System             | Laravel Echo, broadcasting with WebSockets (Pusher or Laravel WebSockets) |
+| 🟥                  | Auction Timer and Status Updates     | Task scheduling with Laravel Scheduler, queue jobs for closing auctions   |
+| 🟥                  | Bid History Tracking                 | Eloquent ORM, database transactions for bid integrity                     |
+| 🟥                  | Notifications                        | Email notifications with Laravel Mail, real-time UI alerts                |
+| 🟥                  | User Watchlist & Alerts              | Many-to-many relationships, notifications queue                           |
+| 🟥                  | Admin Dashboard for Monitoring       | Authorization policies, middleware, resource controllers                  |
+| 🟥                  | REST API for Mobile Clients          | API Resources, Sanctum or Passport authentication                         |
 
-## Overview
+### User Registration and Authentication
 
-The **Laravel Docker Examples Project** offers practical and modular examples for Laravel developers to create efficient Docker environments for development and production. This project demonstrates modern Docker best practices, including multi-stage builds, modular configurations, and environment-specific customization. It is designed to be educational, flexible, and extendable, providing a solid foundation for Dockerizing Laravel applications.
+Users need to be able to register an account, so that they can bid on items.  
+After registration a user needs to be able to authenticate, so we can log it into the right account.
 
+MVP
 
-## Project Structure
+-   Login page with username and password field and submit button
+-   Logout button which will end your session and invalidates your api token
 
-The project is organized as a typical Laravel application, with the addition of a `docker` directory containing the Docker configurations and scripts. These are separated by environments and services. There are two main Docker Compose projects in the root directory:
+Extra
 
-- **compose.dev.yaml**: Orchestrates the development environment.
-- **compose.prod.yaml**: Orchestrates the production environment.
+-   "Remember me" checkbox on login page for faster login
+-   Session timeouts (invalidate session/token after X minutes of inactivity)
+-   2 Factor authentication
 
-### Directory Structure
+### Item Listings with Categories
 
-```
-project-root/ 
-├── app/ # Laravel app folder
-├── ...  # Other Laravel files and directories 
-├── docker/ 
-│   ├── common/ # Shared configurations
-│   ├── development/ # Development-specific configurations 
-│   ├── production/ # Production-specific configurations
-├── compose.dev.yaml # Docker Compose for development 
-├── compose.prod.yaml # Docker Compose for production 
-└── .env.example # Example environment configuration
-```
+There should be a page where users can view the items that are listed, so that they can bid on them.  
+The items should be grouped/filtered by categories, so that they can be easily found by users.
 
-This modular structure ensures shared logic between environments while allowing environment-specific customizations.
+MVP
 
+-   A page that shows all items
+-   An item consists of:
+    -   Title
+    -   Image (optional?)
+    -   Description
+    -   Categories (tags)
+-   User should be able to filter listings by tags
 
-### Production Environment
+Extra
 
-The production environment is configured using the `compose.prod.yaml` file. It is optimized for performance and security, using multi-stage builds and runtime-only dependencies. It uses a shared PHP-FPM multi-stage build with the target `production`.
+-   Filter by Title
 
-- **Optimized Images**: Multi-stage builds ensure minimal image size and enhanced security.
-- **Pre-Built Assets**: Assets are compiled during the build process, ensuring the container is ready to serve content immediately upon deployment.
-- **Health Checks**: Built-in health checks monitor service statuses and ensure smooth operation.
-- **Security Best Practices**: Minimizes the attack surface by excluding unnecessary packages and users.
-- **Docker Compose for Production**: Tailored for deploying Laravel applications with Nginx, PHP-FPM, Redis, and PostgreSQL.
+### Real-Time Bidding System
 
-This environment is designed for easy deployment to any Docker-compatible hosting platform.
+A user should be able to bid on an item listing, so that they can (potentially) win the bidding and thus purchase the item.
 
+MVP
 
-### Development Environment
+-   Item listings should contain:
+    -   Open for bids (yes/no)
+    -   A timer for how long the item is open for bids
+    -   Bid an amount (if open for bids)
+-   You can bid only once as long as your bid has not been outbid
+-   When the timer runs out the last highest bid is accepted
 
-The development environment is configured using the `compose.dev.yaml` file and is built on top of the production version. This ensures the development environment is as close to production as possible while still supporting tools like Xdebug and writable permissions.
+Extra
 
-Key features include:
-- **Close Parity with Production**: Mirrors the production environment to minimize deployment issues.
-- **Development Tools**: Includes Xdebug for debugging and writable permissions for mounted volumes.
-- **Hot Reloading**: Volume mounts enable real-time updates to the codebase without rebuilding containers.
-- **Services**: PHP-FPM, Nginx, Redis, PostgreSQL, and Node.js (via NVM).
-- **Custom Dockerfiles**: Extends shared configurations to include development-specific tools.
+-   Filter by "open for bids"
 
-To set up the development environment, follow the steps in the **Getting Started** section.
+### Auction Timer and Status Updates
 
+A user should see the timer on a item listing, so that they will know when they can bid and when bidding is closed.  
+A user should receive status updates on item listings, so that they will know when:
 
-## Getting Started
+-   bidding started
+-   they are outbid and can bid again
+-   bidding has closed
 
-Follow these steps to set up and run the Laravel Docker Examples Project:
+MVP
 
-### Prerequisites
-Ensure you have Docker and Docker Compose installed. You can verify by running:
+-   Show the different item status to the user:
+    -   Bidding started
+    -   Outbid
+    -   Bidding closed
+-   Show the time until the bidding is closed
 
-```bash
-docker --version
-docker compose version
-```
+Extra
 
-If these commands do not return the versions, install Docker and Docker Compose using the official documentation: [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/).
+-   ...
 
-### Clone the Repository
+### Bid History Tracking
 
-```bash
-git clone https://github.com/rw4lll/laravel-docker-examples.git
-cd laravel-docker-examples
-```
+A user should be able to see all bids that are made on an item, so that they can verify what bids have been made
+(or should we turn this into the history of your own bids?)
 
-### Setting Up the Development Environment
+MVP
 
-1. Copy the .env.example file to .env and adjust any necessary environment variables:
+-   TBD
 
-```bash
-cp .env.example .env
-```
+### Notifications
 
-Hint: adjust the `UID` and `GID` variables in the `.env` file to match your user ID and group ID. You can find these by running `id -u` and `id -g` in the terminal.
+A user should receive email and browser notifications of status updates, so that they don't have to be on the webpage to receive updates.
 
-2. Start the Docker Compose Services:
+MVP
 
-```bash
-docker compose -f compose.dev.yaml up -d
-```
+-   Email and browser notification on:
+    -   Winning a bidding
+    -   Losing a bidding that you have bid on
+    -   Being outbid
 
-3. Install Laravel Dependencies:
+Extra
 
-```bash
-docker compose -f compose.dev.yaml exec workspace bash
-composer install
-npm install
-npm run dev
-```
+-   ...
 
-4. Run Migrations:
+### User Watchlist & Alerts
 
-```bash
-docker compose -f compose.dev.yaml exec workspace php artisan migrate
-```
+A user should be able to add items to a watchlist, so that they can receive updates on items they have not bid on.
 
-5. Access the Application:
+MVP
 
-Open your browser and navigate to [http://localhost](http://localhost).
+-   Add item listings to a watchlist
+-   Configure alerts (email/browser notifications) for a watchlist
+    -   Open for bidding
+    -   Closed for bidding (without having placed a bid)
+    -   Each new bid
 
-## Usage
+Extra
 
-Here are some common commands and tips for using the development environment:
+-   ...
 
-### Accessing the Workspace Container
+### Admin Dashboard for Monitoring
 
-The workspace sidecar container includes Composer, Node.js, NPM, and other tools necessary for Laravel development (e.g. assets building).
+An admin needs to be able to see and delete bids from an item listing, in case of invalid bids.  
+An admin needs to be able to see, create, edit and delete item listings, in case of invalid item listings.
+An admin needs to be able to schedule an auction timer on an item listing, so that this can start automatically in the future.
 
-```bash
-docker compose -f compose.dev.yaml exec workspace bash
-```
+MVP
 
-### Run Artisan Commands:
+-   Admin protected page that shows:
+    -   Item listings
+        -   View listing
+        -   Create listing
+        -   Edit listing
+        -   Delete listing
+        -   Schedule the auction timer for this listing
+        -   Edit/Remove the schedule auction timer
+    -   Bids
+        -   View bid
+        -   Delete bid
 
-```bash
-docker compose -f compose.dev.yaml exec workspace php artisan migrate
-```
+Extra
 
-### Rebuild Containers:
+-   Edit the time left on an already running auction timer
 
-```bash
-docker compose -f compose.dev.yaml up -d --build
-```
+### REST API for Mobile Clients
 
-### Stop Containers:
-
-```bash
-docker compose -f compose.dev.yaml down
-```
-
-### View Logs:
-
-```bash
-docker compose -f compose.dev.yaml logs -f
-```
-
-For specific services, you can use:
-
-```bash
-docker compose -f compose.dev.yaml logs -f web
-```
-
-## Production Environment
-
-The production environment is designed with security and efficiency in mind:
-
-- **Optimized Docker Images**: Uses multi-stage builds to minimize the final image size, reducing the attack surface.
-- **Environment Variables Management**: Sensitive data such as passwords and API keys are managed carefully to prevent exposure.
-- **User Permissions**: Containers run under non-root users where possible to follow the principle of least privilege.
-- **Health Checks**: Implemented to monitor the status of services and ensure they are functioning correctly.
-- **HTTPS Setup**: While not included in this example, it's recommended to configure SSL certificates and use HTTPS in a production environment.
-
-
-### Deploying
-
-The production image can be deployed to any Docker-compatible hosting environment, such as AWS ECS, Kubernetes, or a traditional VPS.
-
-## Technical Details
-
-- **PHP**: Version **8.4 FPM** is used for optimal performance in both development and production environments.
-- **Node.js**: Version **22.x** is used in the development environment for building frontend assets with Vite.
-- **PostgreSQL**: Version **16** is used as the database in the examples, but you can adjust the configuration to use MySQL if preferred.
-- **Redis**: Used for caching and session management, integrated into both development and production environments.
-- **Nginx**: Used as the web server to serve the Laravel application and handle HTTP requests.
-- **Docker Compose**: Orchestrates the services, simplifying the process of starting and stopping the environment.
-- **Health Checks**: Implemented in the Docker Compose configurations and Laravel application to ensure all services are operational.
-
-
-## Contributing
-
-Contributions are welcome! Whether you find a bug, have an idea for improvement, or want to add a new feature, your input is valuable.
-
-### How to Contribute
-
-1. **Fork the Repository:**
-
-   Click the "Fork" button at the top right of this page to create your own copy of the repository.
-
-2. **Clone Your Fork:**
-
-```bash
-    git clone https://github.com/your-user-name/laravel-docker-examples.git
-    cd laravel-docker-examples
-```
-
-3. Create a Branch:
-
-```bash
-    git checkout -b your-feature-branch
-```
-
-4. Make Your Changes.
-
-    Implement your changes or additions.
-
-5. Commit Your Changes:
-
-```bash
-git commit -m "Description of changes"
-```
-
-6. Push to Your Fork:
-
-```bash
-    git push origin feature-branch
-```
-
-7. Submit a Pull Request:
-    - Go to the original repository.
-    - Click on "Pull Requests" and then "New Pull Request."
-    - Select your fork and branch, and submit your pull request.
-
-## License
-
-This project is licensed under the MIT License. See the LICENSE file for more details.
+All the functionality should be exposed by a REST API, so that clients for other devices can be created.
