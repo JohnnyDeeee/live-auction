@@ -1,0 +1,25 @@
+name: PHPStan Static Analysis
+
+on:
+  push:
+    branches: ['master']
+  pull_request:
+    branches: ['master']
+
+permissions:
+  contents: read
+
+jobs:
+  php-static-analysis:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PHP Dependencies
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+      - name: PHPStan Static Analysis
+        uses: php-actions/phpstan@v3
+        with:
+          path: app/
+          configuration: phpstan.neon
+          memory_limit: 1G

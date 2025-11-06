@@ -1,3 +1,21 @@
 {
-    "php.validate.executablePath": "./php"
+    "php.validate.executablePath": "./php",
+    "phpunit.paths": {
+        "/home/johndoe/programming/live-auction/": "/var/www/"
+    },
+    "phpunit.command": "docker compose -f compose.dev.yaml exec php-fpm",
+    "php.executablePath": "./php",
+    "phpunit.phpunit": "./vendor/bin/pest",
+    "phpstan.dockerContainerName": "live-auction-workspace-1",
+    "phpstan.memoryLimit": "2G",
+    "phpstan.paths": {
+        "/home/johndoe/programming/live-auction/": "/var/www/"
+    },
+    "php.completion.autoimport": "auto-import",
+    "php.codeActions.enabled": false,
+    "intelephense.codeLens.implementations.enable": true,
+    "intelephense.codeLens.overrides.enable": true,
+    "intelephense.codeLens.parent.enable": true,
+    "intelephense.codeLens.references.enable": true,
+    "intelephense.codeLens.usages.enable": true
 }
