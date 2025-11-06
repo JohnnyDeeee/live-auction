@@ -1,15 +1,20 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Models\Listing;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+    $props = [
+        'listings' => Listing::all()->sortByDesc('created_at')
+    ];
+    if (app()->environment('local')) {
+        $props['laravelVersion'] = Application::VERSION;
+        $props['phpVersion'] = PHP_VERSION;
+    }
+    return Inertia::render('Welcome', $props);
 });
 
 Route::get('/dashboard', function () {
@@ -22,4 +27,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

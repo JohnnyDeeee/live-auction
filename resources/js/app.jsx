@@ -2,6 +2,7 @@ import '../css/app.css';
 import './bootstrap';
 
 import { createInertiaApp } from '@inertiajs/react';
+import { GlobalStyles, StyledEngineProvider } from '@mui/material';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 
@@ -17,7 +18,12 @@ createInertiaApp({
     setup({ el, App, props }) {
         const root = createRoot(el);
 
-        root.render(<App {...props} />);
+        root.render(
+            <StyledEngineProvider enableCssLayer>
+                <GlobalStyles styles="@layer theme, base, mui, components, utilities;" />
+                <App {...props} />
+            </StyledEngineProvider>,
+        );
     },
     progress: {
         color: '#4B5563',
