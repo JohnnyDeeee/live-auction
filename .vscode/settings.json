@@ -3,7 +3,7 @@
     "phpunit.paths": {
         "/home/johndoe/programming/live-auction/": "/var/www/"
     },
-    "phpunit.command": "docker compose -f compose.dev.yaml exec workspace",
+    "phpunit.command": "docker compose -f compose.dev.yaml exec php-fpm",
     "php.executablePath": "./php",
     "phpunit.phpunit": "./vendor/bin/pest"
 }
