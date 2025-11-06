@@ -1,3 +1,9 @@
 {
-    "php.validate.executablePath": "./php"
+    "php.validate.executablePath": "./php",
+    "phpunit.paths": {
+        "/home/johndoe/programming/live-auction/": "/var/www/"
+    },
+    "phpunit.command": "docker compose -f compose.dev.yaml exec workspace",
+    "php.executablePath": "./php",
+    "phpunit.phpunit": "./vendor/bin/pest"
 }
