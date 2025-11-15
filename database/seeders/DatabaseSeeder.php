@@ -21,5 +21,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         (new ListingSeeder())->run();
+        (new TagSeeder())->run();
+        (new ListingTagSeeder())->run();
     }
 }

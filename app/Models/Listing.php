@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Listing extends Model
 {
@@ -15,4 +16,12 @@ class Listing extends Model
         'description',
         'image_url'
     ];
+
+    /**
+     * @return BelongsToMany<Tag, $this, ListingTag>
+     */
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class)->using(ListingTag::class);
+    }
 }
