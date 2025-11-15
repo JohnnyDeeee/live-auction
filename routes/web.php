@@ -8,7 +8,7 @@ use Inertia\Inertia;
 
 Route::get('/', function () {
     $props = [
-        'listings' => Listing::all()->sortByDesc('created_at')
+        'listings' => Listing::with('tags')->get()->sortByDesc('created_at')
     ];
     if (app()->environment('local')) {
         $props['laravelVersion'] = Application::VERSION;
